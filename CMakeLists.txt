@@ -1,0 +1,18 @@
+cmake_minimum_required(VERSION 3.20)
+project(JavaInvoker)
+
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${PROJECT_BINARY_DIR})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${PROJECT_BINARY_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${PROJECT_BINARY_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${PROJECT_BINARY_DIR})
+
+set(RESOURCES_DIR ${PROJECT_SOURCE_DIR}\\resources)
+include_directories(include)
+enable_testing()
+add_subdirectory(googletest)
+add_library(JavaInvoker_SHARED SHARED src/JVMFactory.cpp src/JVMFactory.h src/JVMLocator.cpp src/JVMLocator.h)
+add_library(JavaInvoker_STATIC STATIC src/JVMFactory.cpp src/JVMFactory.h src/JVMLocator.cpp src/JVMLocator.h)
+add_subdirectory(test)
