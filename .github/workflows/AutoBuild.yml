@@ -1,0 +1,66 @@
+name: CI
+on:
+  push:
+    branches: [ master ]
+jobs:
+  build:
+    runs-on: windows-2019
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+      - run: java -jar SetupMingwW64.jar
+      - name: Read file
+        id: version
+        uses: juliangruber/read-file-action@v1.1.4
+        with:
+          path: ${{ github.workspace }}\VERSION
+      - name: Read file
+        id: description
+        uses: juliangruber/read-file-action@v1.1.4
+        with:
+          path: ${{ github.workspace }}\DESCRIPTION
+      - name: setup mingw_w64 and build src
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          mkdir build
+          cd build
+          cmake -G"MinGW Makefiles" ..
+          mingw32-make
+          cd..
+          7z a -ttar JavaInvoker_v${{steps.version.outputs.content}}_${{env.COMMIT_SHA}}.tar .\build\*
+          7z a -tgzip JavaInvoker_v${{steps.version.outputs.content}}_${{env.COMMIT_SHA}}_x64_windows.tar.gz JavaInvoker_v${{steps.version.outputs.content}}_${{env.COMMIT_SHA}}.tar
+      - name: Upload a Build Artifact
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: build_${{steps.version.outputs.content}}_${{env.COMMIT_SHA}}
+          path: |
+            ${{ github.workspace }}\build\*
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@latest
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{steps.version.outputs.content}}_${{env.COMMIT_SHA}}
+          release_name: v${{steps.version.outputs.content}}_${{env.COMMIT_SHA}}
+          body: ${{steps.description.outputs.content}}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_name: JavaInvoker_v${{steps.version.outputs.content}}_${{env.COMMIT_SHA}}_x64_windows.tar.gz
+          asset_path: .\JavaInvoker_v${{steps.version.outputs.content}}_${{env.COMMIT_SHA}}_x64_windows.tar.gz
+          asset_content_type: application/gzip

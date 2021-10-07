@@ -2,7 +2,7 @@
 // Created by shandiankulishe on 2021/10/4.
 //
 #include <gtest/gtest.h>
-#include "../src/JVMLocator.h"
+#include "JVMLocator.h"
 TEST(TestJavaInvoker,TestJVMLocator)
 {
     vector<string> vct;

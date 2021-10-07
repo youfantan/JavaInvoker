@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.18)
 enable_testing()
+include_directories(include)
 add_executable(JavaInvokerTest TestJVMFactory.cpp TestJVMLocator.cpp)
 target_link_libraries(JavaInvokerTest PUBLIC gtest_main JavaInvoker_STATIC)
 file(COPY ${RESOURCES_DIR}\\Test.jar DESTINATION ${PROJECT_BINARY_DIR})

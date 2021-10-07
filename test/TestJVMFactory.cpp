@@ -3,8 +3,8 @@
 //
 
 #include <gtest/gtest.h>
-#include "../src/JVMFactory.h"
-#include "../src/JVMLocator.h"
+#include "JVMFactory.h"
+#include "JVMLocator.h"
 int main(){
     testing::InitGoogleTest();
     return RUN_ALL_TESTS();
